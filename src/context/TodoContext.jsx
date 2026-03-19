@@ -4,35 +4,17 @@ const TodoContext = createContext(null);
 
 export function TodoProvider({ children }) {
   const [todos, setTodos] = useState([
-    {
-      id: 1,
-      text: "리액트 공부하기",
-      checked: true,
-      priority: "high",
-      dueDate: "2025-03-25",
-    },
-    {
-      id: 2,
-      text: "컴포넌트 분리 연습",
-      checked: false,
-      priority: "medium",
-      dueDate: "2025-03-22",
-    },
-    { id: 3, text: "운동하기", checked: false, priority: "low", dueDate: "" },
+    { id: 1, text: "리액트 공부하기", checked: true },
+    { id: 2, text: "컴포넌트 분리 연습", checked: false },
+    { id: 3, text: "운동하기", checked: false },
   ]);
   const nextId = useRef(4);
 
-  const addTodo = (text, priority = "medium", dueDate = "") => {
+  const addTodo = (text) => {
     if (!text.trim()) return;
     setTodos((prev) => [
-      {
-        id: nextId.current++,
-        text: text.trim(),
-        checked: false,
-        priority,
-        dueDate,
-      },
       ...prev,
+      { id: nextId.current++, text: text.trim(), checked: false },
     ]);
   };
 
@@ -44,30 +26,16 @@ export function TodoProvider({ children }) {
       prev.map((t) => (t.id === id ? { ...t, checked: !t.checked } : t)),
     );
 
-  const editTodo = (id, updates) =>
+  const editTodo = (id, newText) => {
+    if (!newText.trim()) return;
     setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+      prev.map((t) => (t.id === id ? { ...t, text: newText.trim() } : t)),
     );
-
-  const toggleAll = () => {
-    const allChecked = todos.every((t) => t.checked);
-    setTodos((prev) => prev.map((t) => ({ ...t, checked: !allChecked })));
   };
-
-  const clearCompleted = () =>
-    setTodos((prev) => prev.filter((t) => !t.checked));
 
   return (
     <TodoContext.Provider
-      value={{
-        todos,
-        addTodo,
-        removeTodo,
-        toggleChecked,
-        editTodo,
-        toggleAll,
-        clearCompleted,
-      }}
+      value={{ todos, addTodo, removeTodo, toggleChecked, editTodo }}
     >
       {children}
     </TodoContext.Provider>
